@@ -32,13 +32,16 @@
             {% endfor %}
         </div>
         <div>
+            <h5>{{room_count}} rooms availables</h5>
             <a href="{% url 'create-room'%}">Create Room</a>
             
             <div>
                 {% for list in lista %}
                     <div>
-                        <a href="{% url 'update-room' list.id %}">EDIT</a>
-                        <a href="{% url 'delete-room' list.id %}">DELETE</a>
+                        {% if request.user == list.host %}
+                            <a href="{% url 'update-room' list.id %}">EDIT</a>
+                            <a href="{% url 'delete-room' list.id %}">DELETE</a>
+                        {% endif %}
                         <span>@{{list.host.username}}</span>
                         <h3>{{list.id}} -- <a href="{% url 'list' list.id %}">{{list.name}}</a></h3>
                         <small>{{list.topic}}</small>
