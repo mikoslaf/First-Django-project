@@ -5,7 +5,8 @@ from django.contrib.auth.decorators import login_required
 from django.db.models import Q
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
-from .models import Room, Topic
+from django.contrib.auth.forms import UserCreationForm
+from .models import Room, Topic, Message
 from .forms import RoomForm
 
 # Create your views here.
@@ -22,7 +23,7 @@ def loginPage(request):
         return redirect('home')
     
     if request.method == 'POST':
-        username = request.POST.get('username')
+        username = request.POST.get('username').lower()
         password = request.POST.get('password')
 
         try: 
@@ -46,9 +47,20 @@ def logoutUser(request):
     return redirect('home')
 
 def registerPage(request):
-    page = 'register'
-    context = {'page': page}
+    form = UserCreationForm()
 
+    if request.method == 'POST':
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            user = form.save(commit=False) # commit False, czyli nie wysyała danych do BD, lecz zabraża je 
+            user.username = user.username.lower()
+            user.save()
+            login(request, user)
+            return redirect('home')
+        else:
+            messages.error(request, 'An error occurred during registration')
+
+    context = {'form': form}
     return render(request, 'login_register.html', context)
 
 def home(request):
@@ -73,7 +85,17 @@ def list(request, pk):
     #         val = x["name"]
     #         break
     val = Room.objects.get(id=pk)
-    context =  {'id': pk,'value': val}
+    Room_messages = val.message_set.all().order_by('-created') # Coś w stylu, że bierze wszystkie dzieci
+
+    if request.method == 'POST':
+        message = Message.objects.create(
+            user = request.user,
+            room = val,
+            body = request.POST.get('body')
+        )
+        return redirect('list', pk=val.id)
+
+    context =  {'id': pk,'value': val, 'Room_messages': Room_messages}
     return render(request, "list.html", context)
 
 @login_required(login_url='login') # Gdy nie jesteś zalogowany przekierowuje do login/ | To jest dekorator
