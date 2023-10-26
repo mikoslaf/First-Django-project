@@ -5,7 +5,7 @@
     <div>
         <form method="POST" action="">
             {% csrf_token %} <!-- Zawse trzeba to dawać do form -->
-            <p>Are you sure you wabt to delete "{{obj}}"?</p>
+            <p>Are you sure you want to delete "{{obj}}"?</p>
             <a href="{{request.META.HTTP_REFERER}}">Go Back</a> <!-- bierze z metadata http tego, gdzie był wcześniej -->
             <input type="submit" value="Confirm"/>
         </form>

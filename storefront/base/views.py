@@ -74,8 +74,9 @@ def home(request):
 
     topic = Topic.objects.all()
     rooms_count = lista.count()
+    room_messages = Message.objects.filter(Q(room__topic__name__icontains=q)).order_by('-created')
 
-    context =  {'name': 'Start', 'lista': lista, 'topics': topic, 'room_count': rooms_count}
+    context =  {'name': 'Start', 'lista': lista, 'topics': topic, 'room_count': rooms_count, 'room_messages': room_messages}
     return render(request, "lista.html", context)
 
 def list(request, pk):
@@ -86,6 +87,8 @@ def list(request, pk):
     #         break
     val = Room.objects.get(id=pk)
     Room_messages = val.message_set.all().order_by('-created') # Coś w stylu, że bierze wszystkie dzieci
+    participants = val.participants.all()
+
 
     if request.method == 'POST':
         message = Message.objects.create(
@@ -93,9 +96,10 @@ def list(request, pk):
             room = val,
             body = request.POST.get('body')
         )
+        val.participants.add(request.user) # dodawanie wartości do wiersza, gdzie jest relacja wiele do wielu
         return redirect('list', pk=val.id)
 
-    context =  {'id': pk,'value': val, 'Room_messages': Room_messages}
+    context =  {'id': pk,'value': val, 'Room_messages': Room_messages, 'participants': participants}
     return render(request, "list.html", context)
 
 @login_required(login_url='login') # Gdy nie jesteś zalogowany przekierowuje do login/ | To jest dekorator
@@ -142,3 +146,25 @@ def deleteRoom(request, pk):
 
     context = {'form': form, 'obj': room}
     return render(request, "list_delete.html", context)
+
+@login_required(login_url='login')
+def deletemessage(request, pk):
+    message = Message.objects.get(id=pk) # Taki selece z sql
+
+    if request.user != message.user:
+        return HttpResponse('Your are not allowed here!')
+    
+    if request.method == 'POST':
+        message.delete() # usuwa wiersz z bazdy danych
+        return redirect('home')
+
+    context = {'obj': message}
+    return render(request, "list_delete.html", context)
+
+def userProfile(request, pk):
+    user = User.objects.get(id=pk)
+    rooms = user.room_set.all()
+    room_message = user.message_set.all()
+    topics = Topic.objects.all()
+    context = {'user': user, 'lista': rooms, 'room_messages': room_message, 'topics': topics}
+    return render(request, 'profile.html', context)
