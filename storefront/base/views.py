@@ -77,7 +77,7 @@ def home(request):
     room_messages = Message.objects.filter(Q(room__topic__name__icontains=q)).order_by('-created')
 
     context =  {'name': 'Start', 'lista': lista, 'topics': topic, 'room_count': rooms_count, 'room_messages': room_messages}
-    return render(request, "lista.html", context)
+    return render(request, "home.html", context)
 
 def list(request, pk):
     # val = None
@@ -109,7 +109,9 @@ def createRoom(request):
     if request.method == 'POST': # Zapisywanie wartości z form
         form = RoomForm(request.POST)
         if form.is_valid():
-            form.save()
+            room = form.save(commit=False)
+            room.host = request.user
+            room.save()
             return redirect('home')
 
     context = {'form': form}

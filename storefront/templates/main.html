@@ -1,18 +1,14 @@
 <!DOCTYPE html>
+{% load static %}
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Strona</title>
-    <style>
-        .home-container {
-            display: grid;
-            grid-template-columns: 1fr 3fr 1fr;
-        }
-    </style>
+    <link rel="stylesheet" href="{% static 'styles/main.css' %}" media="screen" type="text/css">
 </head>
 <body>
-    <h1>Logo</h1>
+    <h1><a href="{% url 'home' %}">Logo</a></h1>
     
     <form method="GET" action="{% url 'home' %}">
         <input type="text" name="q" placeholder="Search Rooms..."/>
@@ -30,7 +26,7 @@
     {% if messages %}
     <ul class="messages">
         {% for message in messages %}
-        <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+        <li {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}tuta</li>
         {% endfor %}
     </ul>
     {% endif %}
