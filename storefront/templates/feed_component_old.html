@@ -1,0 +1,12 @@
+{% for list in lista %}
+<div>
+    {% if request.user == list.host %}
+        <a href="{% url 'update-room' list.id %}">EDIT</a>
+        <a href="{% url 'delete-room' list.id %}">DELETE</a>
+    {% endif %}
+    <a href="{% url 'user-profile' list.host.id %}">@{{list.host.username}}</a>
+    <h3>{{list.id}} -- <a href="{% url 'list' list.id %}">{{list.name}}</a></h3>
+    <small>{{list.topic}}</small>
+    <hr>
+</div>
+{% endfor %}

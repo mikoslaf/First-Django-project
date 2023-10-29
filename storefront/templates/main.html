@@ -5,7 +5,7 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="shortcut icon" href="assets/favicon.ico" type="image/x-icon" />
+    <link rel="shortcut icon" href="{% static 'assets/favicon.ico' %}" type="image/x-icon" />
     <link rel="stylesheet" href="{% static 'styles/style.css' %}" />
     <title>StudyBuddy - Find study partners around the world!</title>
   </head>
@@ -14,10 +14,11 @@
     <header class="header header--loggedIn">
       <div class="container">
         <a href="{% url 'home' %}" class="header__logo">
-          <img src="assets/logo.svg" />
+          <img src="{% static 'assets/logo.svg' %}" />
           <h1>StudyBuddy</h1>
         </a>
         <form class="header__search">
+          {% csrf_token %}
           <label>
             <svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
               <title>search</title>
@@ -81,7 +82,7 @@
           {% else %}
 
           <a href="{% url 'login' %}">
-            <img src="./assets/avatar.svg" />
+            <img src="{% static 'assets/avatar.svg'}" />
             <p>Login</p>
           </a>
 
